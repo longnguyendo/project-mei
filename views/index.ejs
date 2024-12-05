@@ -1,39 +1,32 @@
 <div class="author">
-    <h1 class="author__heading">Long</h1>
-    <p class="author__body">Web developer.</p>
-</div>
-
-<img src="/img/hero-image.png" alt="person looking out through window" class="hero-image" width="981" height="528">
-
-<section class="articles">
-    <h2 class="articles__heading">Latest posts</h2>
-
-    <ul class="articles__ul">
-        <% data.forEach(post => { %>
-
-            <li><a href="/post/<%= post._id %>">
-                <span><%= post.title %></span>   
-                <span class="articles-list__date"><%= post.createdAt%></span> 
-                </a>
-            </li>
-        <% }) %> 
+    <h1 class="author__heading">Hi, I am Raddy.</h1>
+    <p class="author__body">Web developer and content creator.</p>
+  </div>
+  
+  <img src="/img/hero-image.webp" alt="person looking out through window" class="hero-image" width="981" height="528">
+  
+  <section class="article">
+    <h2 class="article__heading">Latest Posts</h2>
+  
+    <ul class="article__ul">
+      <% data.forEach(post => { %>
+        <li>
+          <a href="/post/<%= post._id %>">
+            <span><%= post.title %></span>
+            <span class="article__list__date"><%=  post.createdAt %></span>
+          </a>
+        </li>
+      <% }) %>
     </ul>
-
-    <a href="#" class="pagination">&lt; View Older Post</a>
-    <h3>Sign In</h3>
-
-    <!-- <form action="/admin" method="POST">
+  
+  
+    <% if (nextPage !== null) { %>
+      <a href="/?page=<%= nextPage %>" class="pagination">&lt; View Older Posts</a>
+    <% } %>
+   
+  
     
-      <label for="username"><b>Username</b></label>
-      <input type="text" placeholder="Enter Username" name="username">
-    
-      <label for="password"><b>Password</b></label>
-      <input type="password" placeholder="Enter Password" name="password">
-    
-      <input type="submit" value="Login" class="btn">
-    
-    </form> -->
-    
-
-</section>
-
+  
+  
+  
+  </section>

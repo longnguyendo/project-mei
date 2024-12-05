@@ -3,13 +3,13 @@
 <div class="admin-title">
     <h2>View / Edit Post</h2>
 
-    <form action="/delete-post/<%= data._id %>?_method=DELETE" method="POST">
+    <form action="/delete-post/<%= data._id %>?_method=DELETE" method="PUT">
         <input type="submit" value="Delete" class="btn-delete btn">
     </form>
 </div>
 
 
-<form action="/edit-post/<%= data._id %>?_method=PUT" method="POST">
+<form action="/edit-post/<%= data._id %>?_method=PUT" method="PUT">
 
     <label for="title"><b>Title</b></label>
     <input type="text" placeholder="Post Title" name="title" value="<%= data.title %>">
