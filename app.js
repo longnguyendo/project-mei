@@ -33,6 +33,11 @@ app.use(session({
     // cookie: { secure: false }  // If using HTTPS, change to true
 }));
 
+
+app.use(express.static('public'));
+app.use(methodOverride('_method'))
+
+// Templating Engine
 app.use(expressLayout);
 app.set('layout', './layouts/main');
 app.set('view engine', 'ejs');
@@ -41,9 +46,9 @@ app.use('/', require('./server/routes/main'));
 app.use('/', require('./server/routes/admin'));
 
 
-app.get('/', (req, res) => {
-    res.send("hello world!");
-});
+// app.get('/', (req, res) => {
+//     res.send("hello world!");
+// });
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

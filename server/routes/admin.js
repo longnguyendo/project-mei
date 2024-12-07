@@ -12,13 +12,19 @@ const jwtSecret = process.env.JWT_SECRET;
  * 
  * Check Login
 */
-const authMiddleware = (req, res, next ) => {
-  const token = req.cookies.token;
 
+
+const authMiddleware = (req, res, next ) => {
+
+  const token = req.cookies.token;
+  // get token from browser 
+
+  // check token validity
   if(!token) {
     return res.status(401).json( { message: 'Unauthorized'} );
   }
 
+  // then try decode password, next() is middleware for debugging
   try {
     const decoded = jwt.verify(token, jwtSecret);
     req.userId = decoded.userId;
@@ -32,7 +38,10 @@ const authMiddleware = (req, res, next ) => {
  * GET /
  * Admin - Login Page
 */
-routes.get('/admin', authMiddleware, async (req, res) => {
+// routes.get => neu nhan dc routes (hppt adress), 
+// ('dia chia', bien , fn() => {})
+routes.get('/admin', async (req, res) => {
+
     try {
         const locals = {
             title: "Admin Panel",
@@ -41,44 +50,28 @@ routes.get('/admin', authMiddleware, async (req, res) => {
 
         // const data = await Post.find({});
 
-        res.render('admin/index', { locals, adminLayout });
+        // response .render = chay chtrinh o dia chi nay,
+        // response .send = gui tinh hieu cho web
+        // response.json = gui du lieu json cho web
+        // response.redirect = chuyen huong den mot trang khac
+
+        // const data = await Post.find({});
+        // res.render('admin/index', { locals, data, adminLayout });
+        //                'dia chi', { gui bien vao trong dia chi }
+        // render admin/index.ejs
+        res.render('admin/index', { locals, layout: adminLayout });
     } catch (err) { 
         console.log(err); 
     }
 })
 
-/**
- * POST /
- * Admin - Register Page
-*/
-routes.post('/register', authMiddleware, async (req, res) => {
-  try {
-      const { username, password } = req.body;
-      const hashedPassword = await bcrypt.hash(password, 10);
 
-      try {
-        const user = await User.create({ 
-          username,
-          password: hashedPassword
-        });
-        res.status(201).json({ message: 'User created' , user: user });
-      } catch (err) {
-        if (err.code === 11000) {
-          res.status(400).json({ message: 'Username already exists' });
-        } 
-        res.status(500).json({ message: err.message});
-      }
-
-  } catch (err) { 
-      console.log(err); 
-  }
-})
 
 /**
  * POST /
  * Admin - Check Login
 */
-routes.post('/admin', authMiddleware, async (req, res) => {
+routes.post('/admin', async (req, res) => {
   try {
     const { username, password } = req.body;
     
@@ -103,7 +96,6 @@ routes.post('/admin', authMiddleware, async (req, res) => {
   }
 });
 
-
 /**
  * GET /
  * Admin Dashboard
@@ -118,31 +110,6 @@ routes.get('/dashboard', authMiddleware, async (req, res) => {
 
     const data = await Post.find();
     res.render('admin/dashboard', {
-      locals,
-      data,
-      layout: adminLayout
-    });
-
-  } catch (error) {
-    console.log(error);
-  }
-//-
-});
-
-/**
- * GET /
- * Admin accounts
-*/
-
-routes.get('/user', authMiddleware, async (req, res) => {
-  try {
-    const locals = {
-      title: 'Dashboard',
-      description: 'Simple Blog created with NodeJs, Express & MongoDb.'
-    }
-    
-    const data = await User.find();
-    res.render('admin/user', {
       locals,
       data,
       layout: adminLayout
@@ -183,23 +150,22 @@ routes.get('/add-post', authMiddleware, async (req, res) => {
 */
 routes.post('/add-post', authMiddleware, async (req, res) => {
   try {
-    console.log(req);
-    res.redirect('/dashboard');
+    try {
+      const newPost = new Post({
+        title: req.body.title,
+        body: req.body.body
+      });
+
+      await Post.create(newPost);
+
+      res.redirect('/dashboard');
+    } catch (error) {
+      console.log(error);
+    }
 
   } catch (error) {
     console.log(error);
   }
-  // try {
-  //   const newPost = new Post({
-  //     title: req.body.title,
-  //     body: req.body.body
-  //   });
-
-  //   await Post.create(newPost);
-  //   res.redirect('/dashboard');
-  // } catch (error) {
-  //   console.log(error);
-  // }
 });
 /**
  * GET /
@@ -229,7 +195,7 @@ routes.get('/edit-post/:id', authMiddleware, async (req, res) => {
 
 /**
  * PUT /
- * Admin - Create New Post
+ * Admin - UPdate Post
 */
 routes.put('/edit-post/:id', authMiddleware, async (req, res) => {
   try {
@@ -237,7 +203,7 @@ routes.put('/edit-post/:id', authMiddleware, async (req, res) => {
     await Post.findByIdAndUpdate(req.params.id, {
       title: req.body.title,
       body: req.body.body,
-      updateAt: Date.now()
+      updatedAt: Date.now()
     });
 
     res.redirect(`/edit-post/${req.params.id}`);
@@ -247,6 +213,30 @@ routes.put('/edit-post/:id', authMiddleware, async (req, res) => {
   }
 
 });
+
+/**
+ * POST /
+ * Admin - Register
+*/
+// routes.post('/register', async (req, res) => {
+//   try {
+//     const { username, password } = req.body;
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     try {
+//       const user = await User.create({ username, password:hashedPassword });
+//       res.status(201).json({ message: 'User Created', user });
+//     } catch (error) {
+//       if(error.code === 11000) {
+//         res.status(409).json({ message: 'User already in use'});
+//       }
+//       res.status(500).json({ message: 'Internal server error'})
+//     }
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 
 /**
  * DELETE /
@@ -261,6 +251,31 @@ routes.delete('/delete-post/:id', authMiddleware, async (req, res) => {
     console.log(error);
   }
 
+});
+
+/**
+ * GET /
+ * Admin accounts
+*/
+
+routes.get('/user', authMiddleware, async (req, res) => {
+  try {
+    const locals = {
+      title: 'Dashboard',
+      description: 'Simple Blog created with NodeJs, Express & MongoDb.'
+    }
+    
+    const data = await User.find();
+    res.render('admin/user', {
+      locals,
+      data,
+      layout: adminLayout
+    });
+
+  } catch (error) {
+    console.log(error);
+  }
+//-
 });
 
 
