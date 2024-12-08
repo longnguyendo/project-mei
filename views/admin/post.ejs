@@ -1,13 +1,15 @@
-<!-- 1 post -->
 <h1><%= data.title %></h1>
 <article class="article"><%= data.body %></article>
-<small>Written by: <%= data.username %></small>
+<li class="admin-post">
+    <div class="admin-post-controls">
+      <a href="/admin/edit-post/<%= data._id %>" class="btn">Edit</a>
 
-<!-- show like -->
-<strong>Likes:</strong> <%= data.likes %>
-<form action="/admin/post/<%= data._id %>/like" method="POST">
-  <button type="submit">Like</button>
-</form>
+      <form action="/admin/delete-post/<%= data._id %>?_method=DELETE" method="POST">
+        <input type="submit" value="Delete" class="btn-delete btn">
+      </form>
+
+    </div>
+</li>
 
 <!-- add comment -->
 <h2>Add a Comment</h2>

@@ -262,6 +262,10 @@ img {
   text-align: center;
 }
 
+.none-underline {
+  text-decoration: none;
+}
+
 
 /* Dashboard Admin */
 .admin-title {
@@ -273,6 +277,10 @@ img {
 .admin-posts {
   padding: 0;
   margin: 0;
+}
+
+.admin-post { 
+  list-style-type:none;
 }
 
 .admin-post-controls form {

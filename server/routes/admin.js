@@ -2,6 +2,7 @@ const express = require('express');
 const routes = express.Router();
 const Post = require('../models/post');
 const User = require('../models/user');
+const Comment = require('../models/comment');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -45,7 +46,7 @@ routes.get('/admin', async (req, res) => {
     try {
         const locals = {
             title: "Admin Panel",
-            description: "Admin panel for managing blog posts."
+            description: "Admin panel for managing blog posts and users (include admin)"
         }
 
         // const data = await Post.find({});
@@ -89,7 +90,7 @@ routes.post('/admin', async (req, res) => {
 
     const token = jwt.sign({ userId: user._id}, jwtSecret );
     res.cookie('token', token, { httpOnly: true });
-    res.redirect('/dashboard');
+    res.redirect('/admin/dashboard');
 
   } catch (error) {
     console.log(error);
@@ -101,7 +102,7 @@ routes.post('/admin', async (req, res) => {
  * Admin Dashboard
 */
 
-routes.get('/dashboard', authMiddleware, async (req, res) => {
+routes.get('/admin/dashboard', authMiddleware, async (req, res) => {
   try {
     const locals = {
       title: 'Dashboard',
@@ -109,9 +110,11 @@ routes.get('/dashboard', authMiddleware, async (req, res) => {
     }
 
     const data = await Post.find();
+    // const user = await User.findOne({ username });
     res.render('admin/dashboard', {
       locals,
       data,
+      // user,
       layout: adminLayout
     });
 
@@ -125,7 +128,7 @@ routes.get('/dashboard', authMiddleware, async (req, res) => {
  * GET /
  * Admin - Create New Post
 */
-routes.get('/add-post', authMiddleware, async (req, res) => {
+routes.get('/admin/add-post', authMiddleware, async (req, res) => {
   try {
     const locals = {
       title: 'Add Post',
@@ -146,9 +149,9 @@ routes.get('/add-post', authMiddleware, async (req, res) => {
 
 /**
  * POST /
- * Admin - Create New Post
+ * Admin - Create New Post form admin
 */
-routes.post('/add-post', authMiddleware, async (req, res) => {
+routes.post('/admin/add-post', authMiddleware, async (req, res) => {
   try {
     try {
       const newPost = new Post({
@@ -158,7 +161,7 @@ routes.post('/add-post', authMiddleware, async (req, res) => {
 
       await Post.create(newPost);
 
-      res.redirect('/dashboard');
+      res.redirect('/admin/dashboard');
     } catch (error) {
       console.log(error);
     }
@@ -167,11 +170,70 @@ routes.post('/add-post', authMiddleware, async (req, res) => {
     console.log(error);
   }
 });
+
 /**
  * GET /
- * Admin - Create New Post
+ * Read Post from admin
+ * /posts
 */
-routes.get('/edit-post/:id', authMiddleware, async (req, res) => {
+routes.get('/post/:id', async (req, res) => {
+  try {
+    let slug = req.params.id;
+
+    const data = await Post.findById({ _id: slug });
+    const comments = await Comment.find({ postId: data._id });
+
+    const locals = {
+      title: data.title,
+      description: "Simple Blog created with NodeJs, Express & MongoDb.",
+    }
+
+    res.render('post', { 
+      locals,
+      data,
+      comments,
+      currentRoute: `/post/${slug}`
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+});
+
+
+/**
+ * GET /
+ * Read Post from admin
+ * admin/post/:id
+*/
+routes.get('/admin/post/:id', async (req, res) => {
+  try {
+    let slug = req.params.id;
+
+    const data = await Post.findById({ _id: slug });
+    const comments = await Comment.find({ postId: data._id });
+
+    const locals = {
+      title: data.title,
+      description: "Simple Blog created with NodeJs, Express & MongoDb.",
+    }
+
+    res.render('admin/post', { 
+      locals,
+      data,
+      comments,
+      layout: adminLayout 
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+});
+/**
+ * GET /
+ * Read update edit-post/:id form admin
+*/
+routes.get('/admin/edit-post/:id', authMiddleware, async (req, res) => {
   try {
 
     const locals = {
@@ -195,9 +257,9 @@ routes.get('/edit-post/:id', authMiddleware, async (req, res) => {
 
 /**
  * PUT /
- * Admin - UPdate Post
+ * Update edit-post/:id from admin
 */
-routes.put('/edit-post/:id', authMiddleware, async (req, res) => {
+routes.put('/admin/edit-post/:id', authMiddleware, async (req, res) => {
   try {
 
     await Post.findByIdAndUpdate(req.params.id, {
@@ -206,8 +268,23 @@ routes.put('/edit-post/:id', authMiddleware, async (req, res) => {
       updatedAt: Date.now()
     });
 
-    res.redirect(`/edit-post/${req.params.id}`);
+    res.redirect(`/admin/post/${req.params.id}`);
 
+  } catch (error) {
+    console.log(error);
+  }
+
+});
+
+/**
+ * DELETE /
+ * Delete post/:id from admin
+*/
+routes.delete('/admin/delete-post/:id', authMiddleware, async (req, res) => {
+
+  try {
+    await Post.deleteOne( { _id: req.params.id } );
+    res.redirect('/admin/dashboard');
   } catch (error) {
     console.log(error);
   }
@@ -218,57 +295,45 @@ routes.put('/edit-post/:id', authMiddleware, async (req, res) => {
  * POST /
  * Admin - Register
 */
-// routes.post('/register', async (req, res) => {
-//   try {
-//     const { username, password } = req.body;
-//     const hashedPassword = await bcrypt.hash(password, 10);
-
-//     try {
-//       const user = await User.create({ username, password:hashedPassword });
-//       res.status(201).json({ message: 'User Created', user });
-//     } catch (error) {
-//       if(error.code === 11000) {
-//         res.status(409).json({ message: 'User already in use'});
-//       }
-//       res.status(500).json({ message: 'Internal server error'})
-//     }
-
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
-
-/**
- * DELETE /
- * Admin - Delete Post
-*/
-routes.delete('/delete-post/:id', authMiddleware, async (req, res) => {
-
+routes.post('/register', async (req, res) => {
   try {
-    await Post.deleteOne( { _id: req.params.id } );
-    res.redirect('/dashboard');
+    const { username, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    try {
+      const user = await User.create({ username, password:hashedPassword });
+      res.redirect('/admin/dashboard');
+    } catch (error) {
+      if(error.code === 11000) {
+        res.status(409).json({ message: 'User already in use'});
+      }
+      res.status(500).json({ message: 'Internal server error'})
+    }
+
   } catch (error) {
     console.log(error);
   }
-
 });
 
+
 /**
+ * USERRSSS
  * GET /
- * Admin accounts
+ * CRUD accounts from admin
 */
 
-routes.get('/user', authMiddleware, async (req, res) => {
+routes.get('/admin/users', authMiddleware, async (req, res) => {
   try {
     const locals = {
       title: 'Dashboard',
       description: 'Simple Blog created with NodeJs, Express & MongoDb.'
     }
     
-    const data = await User.find();
-    res.render('admin/user', {
+    // const data = await Post.find();
+    const users = await User.find();
+    res.render('admin/users', {
       locals,
-      data,
+      users,
       layout: adminLayout
     });
 
@@ -281,7 +346,96 @@ routes.get('/user', authMiddleware, async (req, res) => {
 
 /**
  * GET /
- * Admin Logout
+ * Read user from admin
+ * admin/user/:id
+*/
+routes.get('/admin/user/:id', async (req, res) => {
+  try {
+    let slug = req.params.id;
+
+    const data = await Post.findById({ _id: slug });
+
+    const locals = {
+      title: data.title,
+      description: "Simple Blog created with NodeJs, Express & MongoDb.",
+    }
+
+    res.render('admin/', { 
+      locals,
+      data,
+      currentRoute: `/users/${slug}`
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+});
+/**
+ * GET /
+ * Read update post/:id form admin
+*/
+routes.get('/admin/edit-user/:id', authMiddleware, async (req, res) => {
+  try {
+
+    const locals = {
+      title: "Edit User",
+      description: "Free NodeJs User Management System",
+    };
+
+    const data = await Post.findOne({ _id: req.params.id });
+
+    res.render('admin/users/edit-user', {
+      locals,
+      data,
+      layout: adminLayout
+    })
+
+  } catch (error) {
+    console.log(error);
+  }
+
+});
+
+/**
+ * PUT /
+ * Update post/:id from admin
+*/
+routes.put('/admin/users/edit-user/:id', authMiddleware, async (req, res) => {
+  try {
+
+    await Post.findByIdAndUpdate(req.params.id, {
+      title: req.body.title,
+      body: req.body.body,
+      updatedAt: Date.now()
+    });
+
+    res.redirect(`/admin/users/edit-user/${req.params.id}`);
+
+  } catch (error) {
+    console.log(error);
+  }
+
+});
+
+/**
+ * DELETE /
+ * Delete /delete-user/:id from admin
+*/
+routes.delete('/admin/users/delete-user/:id', authMiddleware, async (req, res) => {
+
+  try {
+    await Post.deleteOne( { _id: req.params.id } );
+    res.redirect('/admin/users');
+  } catch (error) {
+    console.log(error);
+  }
+
+});
+
+
+/**
+ * GET /
+ * Logout from admin
 */
 routes.get('/logout', (req, res) => {
   res.clearCookie('token');
