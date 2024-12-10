@@ -1,20 +1,20 @@
-<a href="/admin/dashboard">&larr; Back</a>
+<a class="none-underline" href="/admin/users">&larr; Back</a>
 <div class="admin-title">
-  <h2>View / Edit Post</h2>
+  <h2>View / Edit Users</h2>
 
-  <form action="/admin/delete-post/<%= data._id %>?_method=DELETE" method="POST">
+  <form action="/admin/delete-user/<%= user._id %>?_method=DELETE" method="POST">
     <input type="submit" value="Delete" class="btn-delete btn">
   </form>
 
 </div>
 
-<form action="/admin/edit-post/<%= data._id %>?_method=PUT" method="POST">
+<form action="/admin/edit-user/<%= user._id %>?_method=PUT" method="POST">
 
-  <label for="title"><b>Title</b></label>
-  <input type="text" placeholder="Post Title" name="title" value="<%= data.title %>">
-
-  <label for="body"><b>Content</b></label>
-  <textarea name="body" cols="50" rows="10"><%= data.body %></textarea>
+  <label for="title"><b>username</b></label>
+  <input type="text" placeholder="Username" name="username" value="<%= user.username %>">
+  <b><p style="color: red;">Password cannot change (hashed)</p></b><br>
+  <label for="body"><b>email</b></label>
+  <input type="email" placeholder="Email" name="email" value="<%= user.email %>">
 
   <input type="submit" value="Update" class="btn">
 

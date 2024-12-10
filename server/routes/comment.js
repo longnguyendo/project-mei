@@ -59,7 +59,7 @@ router.get('admin/add-comment', authMiddleware, async (req, res) => {
    * POST /
    * Admin - Create New Post form admin
   */
-router.post('/admin/add-post', authMiddleware, async (req, res) => {
+router.post('/admin/add-comment', authMiddleware, async (req, res) => {
     try {
       try {
         const newPost = new Post({

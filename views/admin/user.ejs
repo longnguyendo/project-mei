@@ -1,0 +1,17 @@
+<a class="none-underline" href="/admin/users">&larr; Back</a>
+<h5>Username</h5> <br> <%= user.username %>
+
+<h5>Password</h5> <br> <%= user.password %>
+
+<h5>email</h5> <br> <%= user.email %>
+
+<li class="admin-post">
+    <div class="admin-post-controls">
+      <a href="/admin/edit-user/<%= user._id %>" class="btn">Edit</a>
+
+      <form action="/admin/delete-user/<%= user._id %>?_method=DELETE" method="POST">
+        <input type="submit" value="Delete" class="btn-delete btn">
+      </form>
+
+    </div>
+</li>

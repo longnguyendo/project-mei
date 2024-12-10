@@ -50,8 +50,19 @@ router.get('', async (req, res) => {
 router.get('/post/:id', async (req, res) => {
   try {
     let slug = req.params.id;
-
     const data = await Post.findById({ _id: slug });
+    const comments = [{
+      postId: data._id,
+      comment: "Day la mot bai binh thuong, toi dang viet gi do",
+    }
+    ,{
+      postId: data._id,
+      comment: "Day la comment thu 2, toi dang viet gi do 2",
+    },
+    {
+      postId: data._id,
+      comment: "Day la comment thu 3, toi dang viet gi do 3",
+    },]
 
     const locals = {
       title: data.title,
@@ -61,6 +72,7 @@ router.get('/post/:id', async (req, res) => {
     res.render('post', { 
       locals,
       data,
+      comments,
       currentRoute: `/post/${slug}`
     });
   } catch (error) {
@@ -113,6 +125,13 @@ router.get('/about', (req, res) => {
     currentRoute: '/about'
   });
 });
+
+router.get('/contact', (req, res) => {
+  res.render('contact', {
+    currentRoute: '/contact'
+  });
+});
+
 
 
 // function insertPostData () {

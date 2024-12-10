@@ -1,31 +1,21 @@
 <!-- 1 post -->
 <h1><%= data.title %></h1>
 <article class="article"><%= data.body %></article>
-<small>Written by: <%= data.username %></small>
 
-<!-- show like -->
-<strong>Likes:</strong> <%= data.likes %>
-<form action="/admin/post/<%= data._id %>/like" method="POST">
-  <button type="submit">Like</button>
-</form>
-
-<!-- add comment -->
-<h2>Add a Comment</h2>
-<form action="/admin/post/<%= data._id %>/comment" method="POST">
-  <textarea name="comment" rows="4" required></textarea>
-  <br>
-  <button type="submit">Submit Comment</button>
-</form>
+<!-- show likes -->
+<br>
+<h3>Number of likes this post: <b>20</b> </h3>
 
 <!-- show comment -->
 <h2>Comments</h2>
 <ul>
   <% comments.forEach(comment => { %>
     <li>
-      <p><strong><%= comment.user.email %>:</strong> <%= comment.content %></p>
-      <small>Posted on <%= comment.createdAt.toLocaleDateString() %></small>
+      <p><strong>A:</strong> <%= comment.comment %></p>
+      
     </li>
   <% }); %>
 </ul>
-
 <hr>
+
+<!-- show comment 2 -->

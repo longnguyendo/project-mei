@@ -15,7 +15,15 @@ const UserSchema = new Schema({
     email: {
         type: String,
         // required: true,
-    }
+    },
+    createAT: {
+        type: Date,
+        default: Date.now()
+    },
+    updateAt: {
+        type: Date,
+        default: Date.now()
+    },
 })
 
 module.exports = mongoose.model('User', UserSchema);

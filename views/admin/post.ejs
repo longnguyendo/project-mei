@@ -1,3 +1,4 @@
+<a class="none-underline" href="/admin/dashboard">&larr; Back</a>
 <h1><%= data.title %></h1>
 <article class="article"><%= data.body %></article>
 <li class="admin-post">
@@ -10,24 +11,29 @@
 
     </div>
 </li>
+<!-- show likes -->
+<br>
+<button class="btn">Like this post </button>
 
 <!-- add comment -->
 <h2>Add a Comment</h2>
 <form action="/admin/post/<%= data._id %>/comment" method="POST">
-  <textarea name="comment" rows="4" required></textarea>
+  <textarea name="text" rows="1" required></textarea>
   <br>
-  <button type="submit">Submit Comment</button>
+  <input type="submit" value="Add a comment" class="btn">
 </form>
+<hr>
 
 <!-- show comment -->
 <h2>Comments</h2>
 <ul>
   <% comments.forEach(comment => { %>
     <li>
-      <p><strong><%= comment.user.email %>:</strong> <%= comment.content %></p>
-      <small>Posted on <%= comment.createdAt.toLocaleDateString() %></small>
+      <p><strong>A:</strong> <%= comment.comment %></p>
+      
     </li>
   <% }); %>
 </ul>
-
 <hr>
+
+<!-- show comment 2 -->
