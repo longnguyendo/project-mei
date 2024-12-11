@@ -11,9 +11,6 @@
 
     </div>
 </li>
-<!-- show likes -->
-<br>
-<button class="btn">Like this post </button>
 
 <!-- add comment -->
 <h2>Add a Comment</h2>
@@ -28,12 +25,11 @@
 <h2>Comments</h2>
 <ul>
   <% comments.forEach(comment => { %>
-    <li>
-      <p><strong>A:</strong> <%= comment.comment %></p>
-      
-    </li>
+    <!-- <li> -->
+      <article class="article"><%= comment.text %></article>
+    <!-- </li> -->
+    <hr>
   <% }); %>
 </ul>
-<hr>
 
 <!-- show comment 2 -->

@@ -209,6 +209,14 @@ img {
   width: 260px;
 }
 
+.article__title { 
+  text-align: center;
+}
+
+/* .article__content {
+  margin: 10px 40px 20px;
+} */
+
 .article__ul li a {
   display: flex;
   flex-direction: column;
@@ -253,6 +261,7 @@ img {
 
 .article {
   white-space: pre-wrap;
+  margin: 10px 40px 20px;
 }
 
 

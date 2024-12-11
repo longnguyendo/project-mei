@@ -1,6 +1,6 @@
 <div class="author">
     <h1 class="author__heading">Hi, I am Long.</h1>
-    <p class="author__body">Web developer </p>
+    <p class="author__body">Wanting to become Software Engineer! </p>
   </div>
   
   <img src="/img/hero-image.webp" alt="person looking out through window" class="hero-image" width="981" height="528">
@@ -12,15 +12,12 @@
       <% data.forEach(post => { %>
         <li>
           <a href="/post/<%= post._id %>">
-            <span><%= post.title %></span>
-            <span class="article__list__date"><%=  post.createdAt %></span>
+            <span class="article__title"><%= post.title %></span>
+            <span class="article__list__date"><%=  post.createAT.toLocaleDateString() %></span>
           </a>
         </li>
       <% }) %>
     </ul>
   
-  
-    <% if (nextPage !== null) { %>
-      <a href="/?page=<%= nextPage %>" class="pagination">&lt; View Older Posts</a>
-    <% } %>
+
   </section>

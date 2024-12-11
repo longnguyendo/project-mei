@@ -1,21 +1,16 @@
 <!-- 1 post -->
-<h1><%= data.title %></h1>
+<h1 class="article__title"><%= data.title %></h1>
 <article class="article"><%= data.body %></article>
-
-<!-- show likes -->
-<br>
-<h3>Number of likes this post: <b>20</b> </h3>
 
 <!-- show comment -->
 <h2>Comments</h2>
 <ul>
   <% comments.forEach(comment => { %>
-    <li>
-      <p><strong>A:</strong> <%= comment.comment %></p>
-      
-    </li>
+
+      <article class="article"><%= comment.text %></article>
+      <hr>
+
   <% }); %>
 </ul>
-<hr>
 
 <!-- show comment 2 -->

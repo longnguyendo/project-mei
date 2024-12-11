@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const PostSchema = new Schema({
+    
     title: {
         type: String,
         required: true
@@ -15,10 +16,10 @@ const PostSchema = new Schema({
         type: Number,
         default: 0
     },
-    // userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    // comments: {
-    //     type: String,
-    // },
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User' 
+    },
     createAT: {
         type: Date,
         default: Date.now()

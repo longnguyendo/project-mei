@@ -58,7 +58,7 @@ routes.get('/admin', async (req, res) => {
         // res.render('admin/index', { locals, data, adminLayout });
         //                'dia chi', { gui bien vao trong dia chi }
         // render admin/index.ejs
-        res.render('admin/index', { locals, layout: adminLayout });
+        res.render('admin/index', { locals });
     } catch (err) { 
         console.log(err); 
     }
@@ -172,16 +172,23 @@ routes.post('/admin/add-post', authMiddleware, async (req, res) => {
 /**
  * GET /
  * Read Post from admin
- * /posts
+ * /post/id
 */
 routes.get('/post/:id', async (req, res) => {
   try {
+
     let slug = req.params.id;
-
+    // console.log("slug: ", slug);
     const data = await Post.findById({ _id: slug });
-    // const comments = await Comment.find().populate('postId reader');
-
-    // console.log(comments);
+    const comments_ = await Comment.find();
+    let comments_2 = new Array();
+    comments_.forEach(comment => {
+      if (data._id.equals(comment.postId)) {
+        comments_2.push(comment);
+      }
+    });
+    
+    comments_2 = comments_2.reverse();
     const locals = {
       title: data.title,
       description: "Simple Blog created with NodeJs, Express & MongoDb.",
@@ -190,7 +197,7 @@ routes.get('/post/:id', async (req, res) => {
     res.render('post', { 
       locals,
       data,
-      comments,
+      comments: comments_2,
       currentRoute: `/post/${slug}`
     });
   } catch (error) {
@@ -205,28 +212,22 @@ routes.get('/post/:id', async (req, res) => {
  * Read Post from admin
  * admin/post/:id
 */
-routes.get('/admin/post/:id/', async (req, res) => {
+routes.get('/admin/post/:id/', authMiddleware, async (req, res) => {
   try {
+    // console.log("Auth: ", authMiddleware);
     let slug = req.params.id;
 
-    const data = await Post.findById({ _id: slug })
-    .populate({})
-    ;
-    // const comments2 = await Comment.find({ postId }).populate('postId');
-    // const comments = await Comment.find({ postId: data._id });
-    const comments = [{
-      postId: data._id,
-      comment: "Day la mot bai binh thuong, toi dang viet gi do",
-    }
-    ,{
-      postId: data._id,
-      comment: "Day la comment thu 2, toi dang viet gi do 2",
-    },
-    {
-      postId: data._id,
-      comment: "Day la comment thu 3, toi dang viet gi do 3",
-    },]
-
+    const data = await Post.findById({ _id: slug });
+    const comments_ = await Comment.find();
+    let comments_2 = new Array();
+    comments_.forEach(comment => {
+      // console.log("id: ", comment.postId, " ", data._id)
+      if (data._id.equals(comment.postId)) {
+        comments_2.push(comment);
+      }
+    });
+    
+    comments_2 = comments_2.reverse();
     const locals = {
       title: data.title,
       description: "Simple Blog created with NodeJs, Express & MongoDb.",
@@ -235,7 +236,7 @@ routes.get('/admin/post/:id/', async (req, res) => {
     res.render('admin/post', { 
       locals,
       data,
-      comments,
+      comments: comments_2,
       // comments2,
       layout: adminLayout 
     });
@@ -246,60 +247,24 @@ routes.get('/admin/post/:id/', async (req, res) => {
 
 // Comment!!
 
-routes.get('/admin/post/:id/comment', async (req, res) => {
-  try {
-    let slug = req.params.id;
-
-    const data = await Post.findById({ _id: slug });
-    console.log('data ', data)
-    const postId = data._id;
-    // const comments2 = await Comment.find({ postId }).populate('postId');
-    // const comments = await Comment.find({ postId: data._id });
-    const comments = [{
-      postId: data._id,
-      comment: "Day la mot bai binh thuong, toi dang viet gi do",
-    }
-    ,{
-      postId: data._id,
-      comment: "Day la comment thu 2, toi dang viet gi do 2",
-    },
-    {
-      postId: data._id,
-      comment: "Day la comment thu 3, toi dang viet gi do 3",
-    },]
-
-    const comments2 = await Comment.findById({ postId })
-    console.log("comments 2 ", comments2) 
-    const locals = {
-      title: data.title,
-      description: "Simple Blog created with NodeJs, Express & MongoDb.",
-    }
-
-    res.render('admin/comments', { 
-      locals,
-      data,
-      comments,
-      layout: adminLayout 
-    });
-  } catch (error) {
-    console.log(error);
-  }
-});
 routes.post('/admin/post/:id/comment', authMiddleware, async(req, res) => {
 
   try {
-    // const { postId } = req.params.postId;
+    let slug = req.params.id;
+    const data = await Post.findById({ _id: slug });
+    const postId = data._id;
+    console.log(" postId 123" , postId);
     try {
 
       // let postId = req.params.id;
       const newComment = new Comment({
-        // postId,
+        postId,
         text: req.body.text,
       });
 
       await Comment.create(newComment);
 
-      res.redirect(`/admin/post/${req.params.id}/comment`);
+      res.redirect(`/admin/post/${req.params.id}/`);
     } catch (error) {
       console.log(error);
     }
@@ -557,7 +522,7 @@ routes.put('/admin/edit-user/:id', authMiddleware, async (req, res) => {
 
 /**
  * PUT /
- * Update post/:id from admin
+ * Update users/edit-user/:id from admin
 */
 routes.put('/admin/users/edit-user/:id', authMiddleware, async (req, res) => {
   try {
